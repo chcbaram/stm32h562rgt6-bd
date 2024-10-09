@@ -36,6 +36,8 @@ bool hwInit(void)
   logPrintf("\n");
 
   ledInit();
-
+  faultInit();
+  assertInit();
+  
   return true;
 }

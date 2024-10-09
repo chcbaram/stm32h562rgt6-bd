@@ -20,6 +20,7 @@ bool logInit(void);
 void logEnable(void);
 void logDisable(void);
 bool logOpen(uint8_t ch, uint32_t baud);
+bool logIsOpen(void);
 void logBoot(uint8_t enable);
 void logPrintf(const char *fmt, ...);
 

@@ -1,28 +1,16 @@
-/*
- * log.c
- *
- *  Created on: Nov 12, 2021
- *      Author: baram
- */
-
-
-
-
 #include "log.h"
-#include "uart.h"
-#ifdef _USE_HW_CLI
-#include "cli.h"
-#endif
 
 
 #ifdef _USE_HW_LOG
+#include "uart.h"
+#include "cli.h"
 
 #ifdef _USE_HW_RTOS
 #define lock()      xSemaphoreTake(mutex_lock, portMAX_DELAY);
 #define unLock()    xSemaphoreGive(mutex_lock);
 #else
-#define lock()
-#define unLock()
+#define lock()      
+#define unLock()    
 #endif
 
 
@@ -58,7 +46,7 @@ static SemaphoreHandle_t mutex_lock;
 
 
 
-#ifdef _USE_HW_CLI
+#if CLI_USE(HW_LOG)
 static void cliCmd(cli_args_t *args);
 #endif
 
@@ -71,7 +59,7 @@ bool logInit(void)
 #ifdef _USE_HW_RTOS
   mutex_lock = xSemaphoreCreateMutex();
 #endif
-
+  
   log_buf_boot.line_index     = 0;
   log_buf_boot.buf_length     = 0;
   log_buf_boot.buf_length_max = LOG_BOOT_BUF_MAX;
@@ -88,7 +76,7 @@ bool logInit(void)
 
   is_init = true;
 
-#ifdef _USE_HW_CLI
+#if CLI_USE(HW_LOG)
   cliAdd("log", cliCmd);
 #endif
 
@@ -118,6 +106,11 @@ bool logOpen(uint8_t ch, uint32_t baud)
 
   is_open = uartOpen(ch, baud);
 
+  return is_open;
+}
+
+bool logIsOpen(void)
+{
   return is_open;
 }
 
@@ -157,14 +150,14 @@ bool logBufPrintf(log_buf_t *p_log, char *p_data, uint32_t length)
 
 void logPrintf(const char *fmt, ...)
 {
+  lock();
 
   va_list args;
   int len;
 
-
   if (is_init != true) return;
 
-  lock();
+
   va_start(args, fmt);
   len = vsnprintf(print_buf, 256, fmt, args);
 
@@ -185,7 +178,7 @@ void logPrintf(const char *fmt, ...)
 }
 
 
-#ifdef _USE_HW_CLI
+#if CLI_USE(HW_LOG)
 void cliCmd(cli_args_t *args)
 {
   bool ret = false;
@@ -221,10 +214,16 @@ void cliCmd(cli_args_t *args)
         buf_len = 64;
       }
 
+      #ifdef _USE_HW_RTOS
       lock();
+      #endif
+
       cliWrite((uint8_t *)&log_buf_boot.buf[index], buf_len);
       index += buf_len;
+
+      #ifdef _USE_HW_RTOS
       unLock();
+      #endif
     }
     ret = true;
   }

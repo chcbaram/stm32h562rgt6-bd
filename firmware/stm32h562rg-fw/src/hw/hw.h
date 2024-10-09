@@ -12,6 +12,8 @@ extern "C" {
 #include "uart.h"
 #include "cli.h"
 #include "log.h"
+#include "assert_def.h"
+#include "fault.h"
 
 
 bool hwInit(void);

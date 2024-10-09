@@ -44,7 +44,8 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Memories definition */
 MEMORY
 {
-  RAM       (xrw) : ORIGIN = 0x20000000,   LENGTH = 640K
+  NO_INIT   (xrw) : ORIGIN = 0x20000000,   LENGTH = 8K
+  RAM       (xrw) : ORIGIN = 0x20002000,   LENGTH = 640K-8K
 
   VECTOR     (rx) : ORIGIN = 0x08000000, LENGTH = 1K
   VER        (rx) : ORIGIN = 0x08000400, LENGTH = 1K  
@@ -188,12 +189,18 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
+  .noinit(NOLOAD) :
+  {
+    . = ALIGN(4);
+    KEEP(*(.noinit))
+    . = ALIGN(4);
+  } >NO_INIT
 
   .fw_flash_end :
   {
     _fw_flash_end = .;
   } >FLASH
-  
+
   /* Remove information from the compiler libraries */
   /DISCARD/ :
   {

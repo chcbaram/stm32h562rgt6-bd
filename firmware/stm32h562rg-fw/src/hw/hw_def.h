@@ -12,6 +12,7 @@
 
 
 #define _USE_HW_ASSERT
+#define _USE_HW_FAULT
 
 
 #define _USE_HW_LED
@@ -41,6 +42,8 @@
 
 //-- CLI
 //
-
+#define _USE_CLI_HW_LOG             1
+#define _USE_CLI_HW_ASSERT          1
+#define _USE_CLI_HW_UART            1
 
 #endif

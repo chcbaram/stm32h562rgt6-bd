@@ -36,7 +36,7 @@ typedef struct
 
 
 
-#ifdef _USE_HW_CLI
+#if CLI_USE(HW_UART)
 static void cliUart(cli_args_t *args);
 #endif
 
@@ -75,7 +75,7 @@ bool uartInit(void)
 
   is_init = true;
 
-#ifdef _USE_HW_CLI
+#if CLI_USE(HW_UART)
   cliAdd("uart", cliUart);
 #endif
   return true;
@@ -420,7 +420,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
-#ifdef _USE_HW_CLI
+#if CLI_USE(HW_UART)
 void cliUart(cli_args_t *args)
 {
   bool ret = false;
