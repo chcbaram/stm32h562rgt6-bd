@@ -19,8 +19,9 @@
 #define      HW_LED_MAX_CH          1
 
 #define _USE_HW_UART
-#define      HW_UART_MAX_CH         1
+#define      HW_UART_MAX_CH         2
 #define      HW_UART_CH_SWD         _DEF_UART1
+#define      HW_UART_CH_USB         _DEF_UART2
 #define      HW_UART_CH_CLI         HW_UART_CH_SWD
 
 #define _USE_HW_CLI
@@ -38,6 +39,10 @@
 #define      HW_LOG_BOOT_BUF_MAX    2048
 #define      HW_LOG_LIST_BUF_MAX    4096
 
+#define _USE_HW_USB
+#define _USE_HW_CDC
+#define      HW_USE_CDC             1
+#define      HW_USE_MSC             0
 
 
 //-- CLI
@@ -45,5 +50,6 @@
 #define _USE_CLI_HW_LOG             1
 #define _USE_CLI_HW_ASSERT          1
 #define _USE_CLI_HW_UART            1
+#define _USE_CLI_HW_USB             1
 
 #endif

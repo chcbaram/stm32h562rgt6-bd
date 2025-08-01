@@ -14,7 +14,8 @@ extern "C" {
 #include "log.h"
 #include "assert_def.h"
 #include "fault.h"
-
+#include "usb.h"
+#include "cdc.h"
 
 bool hwInit(void);
 

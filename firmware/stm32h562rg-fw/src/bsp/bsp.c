@@ -3,6 +3,7 @@
 
 
 static void SystemClock_Config(void);
+static void mpuInit(void);
 static DCACHE_HandleTypeDef hdcache1;
 
 
@@ -37,6 +38,8 @@ bool bspInit(void)
   {
     Error_Handler();
   }
+
+  mpuInit();
 
   return ret;
 }
@@ -105,8 +108,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLL1_SOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 1;
@@ -141,4 +145,33 @@ void SystemClock_Config(void)
   /** Configure the programming delay
   */
   __HAL_FLASH_SET_PROGRAM_DELAY(FLASH_PROGRAMMING_DELAY_2);
+}
+
+static void mpuInit(void)
+{
+  MPU_Region_InitTypeDef MPU_InitStruct;
+  MPU_Attributes_InitTypeDef   MPU_AttributesInit;
+
+  /* Disable MPU before perloading and config update */
+  HAL_MPU_Disable();
+
+  /* Define cacheable memory via MPU */
+  MPU_AttributesInit.Number             = MPU_ATTRIBUTES_NUMBER0;
+  MPU_AttributesInit.Attributes         = MPU_NOT_CACHEABLE;
+  HAL_MPU_ConfigMemoryAttributes(&MPU_AttributesInit);
+
+  /* Configure FLASH region as REGION Number 0 */
+  MPU_InitStruct.Enable           = MPU_REGION_ENABLE;
+  MPU_InitStruct.Number           = MPU_REGION_NUMBER0;
+  MPU_InitStruct.AttributesIndex  = MPU_ATTRIBUTES_NUMBER0;
+  MPU_InitStruct.BaseAddress      = (uint32_t) 0x08FFF800;
+  MPU_InitStruct.LimitAddress     = (uint32_t) 0x08FFF80C;
+  MPU_InitStruct.AccessPermission = MPU_REGION_ALL_RO;
+  MPU_InitStruct.DisableExec      = MPU_INSTRUCTION_ACCESS_ENABLE;
+  MPU_InitStruct.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* Enable the MPU */
+  HAL_MPU_Enable(MPU_HFNMI_PRIVDEF);
 }

@@ -39,5 +39,9 @@ bool hwInit(void)
   faultInit();
   assertInit();
   
+  usbInit();
+  usbBegin(USB_CDC_MODE);
+  cdcInit();
+  
   return true;
 }
