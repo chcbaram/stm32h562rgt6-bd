@@ -167,7 +167,7 @@ void cliCmd(cli_args_t *args)
       cliMoveUp(7);
       delay(100);
     }
-    cliMoveUp(7);
+    cliMoveDown(7);
 
     ret = true;
   }
